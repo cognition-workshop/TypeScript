@@ -42,7 +42,7 @@ import {
 } from "./_namespaces/ts.server.js";
 
 interface NpmConfig {
-    devDependencies: MapLike<any>;
+    devDependencies: MapLike<string>;
 }
 
 interface NpmLock {
