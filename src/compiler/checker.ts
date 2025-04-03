@@ -37563,7 +37563,7 @@ export function createTypeChecker(host: TypeCheckerHost): TypeChecker {
 
     function checkImportMetaProperty(node: MetaProperty) {
         if (ModuleKind.Node16 <= moduleKind && moduleKind <= ModuleKind.NodeNext) {
-            if (getSourceFileOfNode(node).impliedNodeFormat !== ModuleKind.ESNext) {
+            if (moduleKind === ModuleKind.NodeNext && getSourceFileOfNode(node).impliedNodeFormat !== ModuleKind.ESNext) {
                 error(node, Diagnostics.The_import_meta_meta_property_is_not_allowed_in_files_which_will_build_into_CommonJS_output);
             }
         }
