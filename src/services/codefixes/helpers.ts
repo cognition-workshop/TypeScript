@@ -1007,3 +1007,12 @@ export function findAncestorMatchingSpan(sourceFile: SourceFile, span: TextSpan)
     }
     return token;
 }
+/** @internal */
+export function createUndefined(): Identifier {
+    return factory.createIdentifier("undefined");
+}
+
+/** @internal */
+export function createErrorCodeArray(diagnostics: readonly any[]): readonly number[] {
+    return diagnostics.map(d => d.code);
+}
