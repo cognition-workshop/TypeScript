@@ -42,7 +42,11 @@ const errorCodes = [
     Diagnostics.Class_0_incorrectly_implements_interface_1.code,
     Diagnostics.Class_0_incorrectly_implements_class_1_Did_you_mean_to_extend_1_and_inherit_its_members_as_a_subclass.code,
 ];
-const fixId = "fixClassIncorrectlyImplementsInterface"; // TODO: share a group with fixClassDoesntImplementInheritedAbstractMember?
+/**
+ * Fix ID for class incorrectly implements interface codefix.
+ * @internal
+ */
+const fixId = "fixClassIncorrectlyImplementsInterface";
 registerCodeFix({
     errorCodes,
     getCodeActions(context) {

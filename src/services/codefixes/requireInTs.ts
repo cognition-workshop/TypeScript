@@ -32,8 +32,16 @@ import {
     VariableStatement,
 } from "../_namespaces/ts.js";
 
+/**
+ * Fix ID for converting require() calls to import statements.
+ * @internal
+ */
 const fixId = "requireInTs";
-const errorCodes = [Diagnostics.require_call_may_be_converted_to_an_import.code];
+/**
+ * Error codes handled by this codefix for require() to import conversion.
+ * @internal
+ */
+const errorCodes = [80005]; // require_call_may_be_converted_to_an_import
 registerCodeFix({
     errorCodes,
     getCodeActions(context) {
@@ -54,6 +62,13 @@ registerCodeFix({
         }),
 });
 
+/**
+ * Applies the transformation from require() to import statement.
+ * @param changes - The change tracker to record modifications
+ * @param sourceFile - The source file being modified
+ * @param info - Information about the require call to transform
+ * @internal
+ */
 function doChange(changes: textChanges.ChangeTracker, sourceFile: SourceFile, info: Info) {
     const { allowSyntheticDefaults, defaultImportName, namedImports, statement, moduleSpecifier } = info;
     changes.replaceNode(
