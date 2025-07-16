@@ -33,12 +33,13 @@ import {
     TypeFlags,
     TypeNode,
 } from "../_namespaces/ts.js";
+import { createErrorCodeArray } from "./helpers.js";
 
 const fixName = "strictClassInitialization";
 const fixIdAddDefiniteAssignmentAssertions = "addMissingPropertyDefiniteAssignmentAssertions";
 const fixIdAddUndefinedType = "addMissingPropertyUndefinedType";
 const fixIdAddInitializer = "addMissingPropertyInitializer";
-const errorCodes = [Diagnostics.Property_0_has_no_initializer_and_is_not_definitely_assigned_in_the_constructor.code];
+const errorCodes = createErrorCodeArray([Diagnostics.Property_0_has_no_initializer_and_is_not_definitely_assigned_in_the_constructor]);
 registerCodeFix({
     errorCodes,
     getCodeActions: function getCodeActionsForStrictClassInitializationErrors(context) {
