@@ -558,7 +558,7 @@ export function createSignatureDeclarationFromCallExpression(
                 typeParameters,
                 parameters,
                 type,
-                createStubbedBody(Diagnostics.Function_not_implemented.message, quotePreference),
+                createStubbedBody("Function not implemented.", quotePreference),
             );
         default:
             Debug.fail("Unexpected kind");
@@ -872,7 +872,7 @@ function createStubbedMethod(
 }
 
 function createStubbedMethodBody(quotePreference: QuotePreference) {
-    return createStubbedBody(Diagnostics.Method_not_implemented.message, quotePreference);
+    return createStubbedBody("Method not implemented.", quotePreference);
 }
 
 /** @internal */
