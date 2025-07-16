@@ -165,12 +165,12 @@ module.exports = createRule({
 
             const hasNewLine = sourceCodeText.slice(commentRangeEnd, argRangeStart).includes("\n");
             if (argRangeStart !== commentRangeEnd + 1 && !hasNewLine) {
-                // TODO(jakebailey): range should be whitespace
+                const whitespaceRange = [commentRangeEnd, argRangeStart] as const;
                 context.report({
                     messageId: "argumentTriviaArgumentSpaceError",
                     node,
                     fix: fixer => {
-                        return fixer.replaceTextRange([commentRangeEnd, argRangeStart], " ");
+                        return fixer.replaceTextRange(whitespaceRange, " ");
                     },
                 });
             }
