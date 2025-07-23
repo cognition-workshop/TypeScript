@@ -2669,6 +2669,39 @@ export function createLanguageService(
         return [];
     }
 
+    /**
+     * Retrieves all available code fixes for the specified error codes at a given position.
+     * This is a critical function for AI code editors to provide intelligent quick fixes
+     * and automated error resolution capabilities to developers.
+     * 
+     * @param fileName - Path to the source file containing the errors
+     * @param start - Start position of the text span containing errors
+     * @param end - End position of the text span containing errors
+     * @param errorCodes - Array of TypeScript error codes to find fixes for
+     * @param formatOptions - Formatting preferences for generated code changes
+     * @param preferences - User preferences for code generation and imports
+     * 
+     * @returns Array of code fix actions that AI editors can present as quick fix options
+     * 
+     * @example
+     * ```typescript
+     * // AI editor requesting fixes for import and type errors
+     * const fixes = languageService.getCodeFixesAtPosition(
+     *   "app.ts",
+     *   100, 150,
+     *   [2304, 2307], // "Cannot find name" and "Cannot find module"
+     *   { insertSpaceAfterCommaDelimiter: true },
+     *   { includeCompletionsForModuleExports: true }
+     * );
+     * 
+     * // Display fixes in AI editor UI
+     * fixes.forEach(fix => {
+     *   showQuickFix(fix.description, () => applyCodeFix(fix));
+     * });
+     * ```
+     * 
+     * @since TypeScript 2.1
+     */
     function getCodeFixesAtPosition(fileName: string, start: number, end: number, errorCodes: readonly number[], formatOptions: FormatCodeSettings, preferences: UserPreferences = emptyOptions): readonly CodeFixAction[] {
         synchronizeHostData();
         const sourceFile = getValidSourceFile(fileName);
@@ -2681,6 +2714,37 @@ export function createLanguageService(
         });
     }
 
+    /**
+     * Executes a combined "fix all" operation for a specific fix type across the specified scope.
+     * Essential for AI code editors to provide efficient bulk corrections that can resolve
+     * multiple instances of the same issue type simultaneously, greatly improving developer productivity.
+     * 
+     * @param scope - Scope definition specifying which files to apply fixes to
+     * @param fixId - Unique identifier for the type of fix to apply across all instances
+     * @param formatOptions - Formatting preferences for generated code changes
+     * @param preferences - User preferences for code generation and import behavior
+     * 
+     * @returns Combined code actions containing all file changes and additional commands
+     * 
+     * @example
+     * ```typescript
+     * // AI editor applying "fix all unused imports" across a file
+     * const batchFix = languageService.getCombinedCodeFix(
+     *   { type: "file", fileName: "app.ts" },
+     *   "unusedImports",
+     *   { insertSpaceAfterCommaDelimiter: true },
+     *   { organizeImportsIgnoreCase: false }
+     * );
+     * 
+     * // Apply all changes atomically
+     * batchFix.changes.forEach(change => applyFileTextChanges(change));
+     * if (batchFix.commands) {
+     *   batchFix.commands.forEach(cmd => executeCommand(cmd));
+     * }
+     * ```
+     * 
+     * @since TypeScript 2.8
+     */
     function getCombinedCodeFix(scope: CombinedCodeFixScope, fixId: {}, formatOptions: FormatCodeSettings, preferences: UserPreferences = emptyOptions): CombinedCodeActions {
         synchronizeHostData();
         Debug.assert(scope.type === "file");

@@ -798,21 +798,109 @@ export interface CodeFixRequest extends Request {
     arguments: CodeFixRequestArgs;
 }
 
+/**
+ * Request interface for executing combined "fix all" operations across multiple locations.
+ * This enables AI code editors to provide efficient bulk corrections for common issues
+ * like unused imports, missing type annotations, or formatting inconsistencies.
+ * 
+ * @example
+ * ```typescript
+ * // AI editor requesting to fix all unused imports in a file
+ * const request: GetCombinedCodeFixRequest = {
+ *   seq: 1,
+ *   type: "request",
+ *   command: "getCombinedCodeFix",
+ *   arguments: {
+ *     scope: { type: "file", args: { file: "app.ts" } },
+ *     fixId: "unusedImports"
+ *   }
+ * };
+ * ```
+ * 
+ * @since TypeScript 2.8
+ */
 export interface GetCombinedCodeFixRequest extends Request {
     command: CommandTypes.GetCombinedCodeFix;
     arguments: GetCombinedCodeFixRequestArgs;
 }
 
+/**
+ * Response interface containing the results of a combined code fix operation.
+ * Provides AI code editors with all necessary file changes and commands to
+ * execute the bulk correction operation.
+ * 
+ * @example
+ * ```typescript
+ * // AI editor processing combined fix response
+ * const response: GetCombinedCodeFixResponse = {
+ *   seq: 1,
+ *   type: "response",
+ *   command: "getCombinedCodeFix",
+ *   success: true,
+ *   body: {
+ *     changes: [
+ *       { fileName: "app.ts", textChanges: [...] },
+ *       { fileName: "utils.ts", textChanges: [...] }
+ *     ],
+ *     commands: [{ type: "organizeImports" }]
+ *   }
+ * };
+ * ```
+ * 
+ * @since TypeScript 2.8
+ */
 export interface GetCombinedCodeFixResponse extends Response {
     body: CombinedCodeActions;
 }
 
+/**
+ * Request interface for applying code action commands that may have side effects.
+ * Used by AI code editors to execute complex operations like organizing imports,
+ * updating references, or performing multi-step refactoring operations.
+ * 
+ * @example
+ * ```typescript
+ * // AI editor applying an organize imports command
+ * const request: ApplyCodeActionCommandRequest = {
+ *   seq: 2,
+ *   type: "request", 
+ *   command: "applyCodeActionCommand",
+ *   arguments: {
+ *     command: {
+ *       type: "organizeImports",
+ *       file: "app.ts",
+ *       mode: "SortAndCombine"
+ *     }
+ *   }
+ * };
+ * ```
+ * 
+ * @since TypeScript 3.2
+ */
 export interface ApplyCodeActionCommandRequest extends Request {
     command: CommandTypes.ApplyCodeActionCommand;
     arguments: ApplyCodeActionCommandRequestArgs;
 }
 
-// All we need is the `success` and `message` fields of Response.
+/**
+ * Response interface for code action command execution results.
+ * Provides success/failure status and any error messages for AI code editors
+ * to handle command execution outcomes appropriately.
+ * 
+ * @example
+ * ```typescript
+ * // AI editor handling command execution result
+ * const response: ApplyCodeActionCommandResponse = {
+ *   seq: 2,
+ *   type: "response",
+ *   command: "applyCodeActionCommand", 
+ *   success: true,
+ *   message: "Imports organized successfully"
+ * };
+ * ```
+ * 
+ * @since TypeScript 3.2
+ */
 export interface ApplyCodeActionCommandResponse extends Response {}
 
 export interface FileRangeRequestArgs extends FileRequestArgs, FileRange {
@@ -832,11 +920,41 @@ export interface FileRangeRequestArgs extends FileRequestArgs, FileRange {
 }
 
 /**
- * Instances of this interface specify errorcodes on a specific location in a sourcefile.
+ * Arguments interface for requesting code fixes at a specific location in a source file.
+ * This is fundamental for AI code editors to provide contextual quick fixes based on
+ * TypeScript compiler diagnostics and user cursor position.
+ * 
+ * @example
+ * ```typescript
+ * // AI editor requesting fixes for import errors at cursor position
+ * const args: CodeFixRequestArgs = {
+ *   file: "app.ts",
+ *   startLine: 10,
+ *   startOffset: 15,
+ *   endLine: 10,
+ *   endOffset: 25,
+ *   errorCodes: [2304, 2307] // "Cannot find name" and "Cannot find module"
+ * };
+ * ```
+ * 
+ * @since TypeScript 2.1
  */
 export interface CodeFixRequestArgs extends FileRangeRequestArgs {
     /**
-     * Errorcodes we want to get the fixes for.
+     * Array of TypeScript error codes that need to be fixed.
+     * AI editors can obtain these from compiler diagnostics to request
+     * specific fixes for known error types.
+     * 
+     * Common error codes include:
+     * - 2304: Cannot find name '{0}'
+     * - 2307: Cannot find module '{0}'
+     * - 2322: Type '{0}' is not assignable to type '{1}'
+     * - 2339: Property '{0}' does not exist on type '{1}'
+     * - 2345: Argument of type '{0}' is not assignable to parameter of type '{1}'
+     * - 6133: '{0}' is declared but its value is never read
+     * - 7030: Not all code paths return a value
+     * 
+     * @example [2304, 2307, 2322] // Common import and type errors
      */
     errorCodes: readonly number[];
 }
@@ -851,8 +969,46 @@ export interface GetCombinedCodeFixScope {
     args: FileRequestArgs;
 }
 
+/**
+ * Arguments interface for applying code action commands with potential side effects.
+ * Supports both single commands and arrays of commands for batch operations,
+ * enabling AI code editors to execute complex multi-step operations efficiently.
+ * 
+ * @example
+ * ```typescript
+ * // AI editor applying a single organize imports command
+ * const singleCommandArgs: ApplyCodeActionCommandRequestArgs = {
+ *   command: {
+ *     type: "organizeImports",
+ *     file: "app.ts",
+ *     mode: "SortAndCombine"
+ *   }
+ * };
+ * 
+ * // AI editor applying multiple commands in sequence
+ * const multiCommandArgs: ApplyCodeActionCommandRequestArgs = {
+ *   command: [
+ *     { type: "organizeImports", file: "app.ts" },
+ *     { type: "formatDocument", file: "app.ts" },
+ *     { type: "updateImportPaths", file: "app.ts" }
+ *   ]
+ * };
+ * ```
+ * 
+ * @since TypeScript 3.2
+ */
 export interface ApplyCodeActionCommandRequestArgs {
-    /** May also be an array of commands. */
+    /**
+     * Command or array of commands to execute.
+     * Can be a single command object for simple operations or an array
+     * for complex multi-step operations that AI editors need to coordinate.
+     * 
+     * Common command types include:
+     * - "organizeImports": Sorts and combines import statements
+     * - "formatDocument": Applies consistent code formatting
+     * - "updateImportPaths": Updates import paths after file moves
+     * - "generateTypes": Generates missing type definitions
+     */
     command: {};
 }
 

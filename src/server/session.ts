@@ -2925,6 +2925,40 @@ export class Session<TMessage = string> implements EventSender {
         return { pos: startPosition, end: endPosition };
     }
 
+    /**
+     * Retrieves all applicable refactoring actions for the specified file location.
+     * This method is essential for AI code editors to discover and present intelligent
+     * code transformation options based on the current context and user selection.
+     * 
+     * @param args - Request arguments containing file path, position/range, and refactor preferences
+     * 
+     * @returns Array of applicable refactor information with actions and metadata
+     * 
+     * @example
+     * ```typescript
+     * // AI editor requesting refactors for selected code
+     * const refactors = session.getApplicableRefactors({
+     *   file: "app.ts",
+     *   startLine: 10,
+     *   startOffset: 5,
+     *   endLine: 15,
+     *   endOffset: 20,
+     *   triggerReason: "invoked",
+     *   kind: "refactor.extract",
+     *   includeInteractiveActions: true
+     * });
+     * 
+     * // Display available refactors in AI editor UI
+     * refactors.forEach(refactor => {
+     *   console.log(`${refactor.name}: ${refactor.description}`);
+     *   refactor.actions.forEach(action => {
+     *     console.log(`  - ${action.name}: ${action.description}`);
+     *   });
+     * });
+     * ```
+     * 
+     * @since TypeScript 2.4
+     */
     private getApplicableRefactors(args: protocol.GetApplicableRefactorsRequestArgs): protocol.ApplicableRefactorInfo[] {
         const { file, project } = this.getFileAndProject(args);
         const scriptInfo = project.getScriptInfoForNormalizedPath(file)!;
@@ -2932,6 +2966,47 @@ export class Session<TMessage = string> implements EventSender {
         return result.map(result => ({ ...result, actions: result.actions.map(action => ({ ...action, range: action.range ? { start: convertToLocation({ line: action.range.start.line, character: action.range.start.offset }), end: convertToLocation({ line: action.range.end.line, character: action.range.end.offset }) } : undefined })) }));
     }
 
+    /**
+     * Executes a specific refactoring action and returns the resulting code edits.
+     * This method is crucial for AI code editors to apply automated code transformations
+     * based on user selections or AI-driven suggestions, enabling intelligent code evolution.
+     * 
+     * @param args - Request arguments containing refactor details and target location
+     * @param simplifiedResult - Whether to return simplified result format for protocol compatibility
+     * 
+     * @returns RefactorEditInfo containing file changes, rename operations, and metadata
+     * 
+     * @example
+     * ```typescript
+     * // AI editor applying extract function refactor
+     * const editInfo = session.getEditsForRefactor({
+     *   file: "app.ts",
+     *   startLine: 10,
+     *   startOffset: 5,
+     *   endLine: 15,
+     *   endOffset: 20,
+     *   refactor: "Extract Symbol",
+     *   action: "function_scope_0",
+     *   interactiveRefactorArguments: {
+     *     newFunctionName: "calculateTotal"
+     *   }
+     * }, true);
+     * 
+     * if (editInfo.edits.length > 0) {
+     *   // Apply file changes
+     *   editInfo.edits.forEach(edit => applyFileChanges(edit));
+     *   
+     *   // Handle rename operation if needed
+     *   if (editInfo.renameLocation) {
+     *     showRenameDialog(editInfo.renameLocation, editInfo.renameFilename);
+     *   }
+     * } else if (editInfo.notApplicableReason) {
+     *   showError(`Refactor not applicable: ${editInfo.notApplicableReason}`);
+     * }
+     * ```
+     * 
+     * @since TypeScript 2.4
+     */
     private getEditsForRefactor(args: protocol.GetEditsForRefactorRequestArgs, simplifiedResult: boolean): RefactorEditInfo | protocol.RefactorEditInfo {
         const { file, project } = this.getFileAndProject(args);
         const scriptInfo = project.getScriptInfoForNormalizedPath(file)!;
@@ -2997,6 +3072,39 @@ export class Session<TMessage = string> implements EventSender {
         return result && this.mapPasteEditsAction(result);
     }
 
+    /**
+     * Organizes import statements in the specified file according to configured preferences.
+     * This method is essential for AI code editors to maintain clean, consistent import
+     * organization and improve code readability through automated import management.
+     * 
+     * @param args - Request arguments containing file scope and organization preferences
+     * @param simplifiedResult - Whether to return simplified result format for protocol compatibility
+     * 
+     * @returns Array of file code edits or text changes for import organization
+     * 
+     * @example
+     * ```typescript
+     * // AI editor organizing imports with custom preferences
+     * const organizedImports = session.organizeImports({
+     *   scope: {
+     *     type: "file",
+     *     args: { file: "app.ts" }
+     *   },
+     *   mode: OrganizeImportsMode.SortAndCombine,
+     *   skipDestructiveCodeActions: false
+     * }, true);
+     * 
+     * // Apply import organization changes
+     * organizedImports.forEach(fileEdit => {
+     *   console.log(`Organizing imports in: ${fileEdit.fileName}`);
+     *   fileEdit.textChanges.forEach(change => {
+     *     applyTextChange(change);
+     *   });
+     * });
+     * ```
+     * 
+     * @since TypeScript 2.8
+     */
     private organizeImports(args: protocol.OrganizeImportsRequestArgs, simplifiedResult: boolean): readonly protocol.FileCodeEdits[] | readonly FileTextChanges[] {
         Debug.assert(args.scope.type === "file");
         const { file, project } = this.getFileAndProject(args.scope.args);
