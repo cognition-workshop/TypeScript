@@ -365,7 +365,7 @@ export function createParenthesizerRules(factory: NodeFactory): ParenthesizerRul
             case SyntaxKind.NewExpression:
                 return !(leftmostExpr as NewExpression).arguments
                     ? factory.createParenthesizedExpression(expression)
-                    : expression as LeftHandSideExpression; // TODO(rbuckton): Verify this assertion holds
+                    : expression as LeftHandSideExpression;
         }
 
         return parenthesizeLeftSideOfAccess(expression);
@@ -388,21 +388,17 @@ export function createParenthesizerRules(factory: NodeFactory): ParenthesizerRul
             && (emittedExpression.kind !== SyntaxKind.NewExpression || (emittedExpression as NewExpression).arguments)
             && (optionalChain || !isOptionalChain(emittedExpression))
         ) {
-            // TODO(rbuckton): Verify whether this assertion holds.
             return expression as LeftHandSideExpression;
         }
 
-        // TODO(rbuckton): Verifiy whether `setTextRange` is needed.
         return setTextRange(factory.createParenthesizedExpression(expression), expression);
     }
 
     function parenthesizeOperandOfPostfixUnary(operand: Expression): LeftHandSideExpression {
-        // TODO(rbuckton): Verifiy whether `setTextRange` is needed.
         return isLeftHandSideExpression(operand) ? operand : setTextRange(factory.createParenthesizedExpression(operand), operand);
     }
 
     function parenthesizeOperandOfPrefixUnary(operand: Expression): UnaryExpression {
-        // TODO(rbuckton): Verifiy whether `setTextRange` is needed.
         return isUnaryExpression(operand) ? operand : setTextRange(factory.createParenthesizedExpression(operand), operand);
     }
 
@@ -415,7 +411,6 @@ export function createParenthesizerRules(factory: NodeFactory): ParenthesizerRul
         const emittedExpression = skipPartiallyEmittedExpressions(expression);
         const expressionPrecedence = getExpressionPrecedence(emittedExpression);
         const commaPrecedence = getOperatorPrecedence(SyntaxKind.BinaryExpression, SyntaxKind.CommaToken);
-        // TODO(rbuckton): Verifiy whether `setTextRange` is needed.
         return expressionPrecedence > commaPrecedence ? expression : setTextRange(factory.createParenthesizedExpression(expression), expression);
     }
 
@@ -425,7 +420,6 @@ export function createParenthesizerRules(factory: NodeFactory): ParenthesizerRul
             const callee = emittedExpression.expression;
             const kind = skipPartiallyEmittedExpressions(callee).kind;
             if (kind === SyntaxKind.FunctionExpression || kind === SyntaxKind.ArrowFunction) {
-                // TODO(rbuckton): Verifiy whether `setTextRange` is needed.
                 const updated = factory.updateCallExpression(
                     emittedExpression,
                     setTextRange(factory.createParenthesizedExpression(callee), callee),
@@ -438,7 +432,6 @@ export function createParenthesizerRules(factory: NodeFactory): ParenthesizerRul
 
         const leftmostExpressionKind = getLeftmostExpression(emittedExpression, /*stopAtCallExpressions*/ false).kind;
         if (leftmostExpressionKind === SyntaxKind.ObjectLiteralExpression || leftmostExpressionKind === SyntaxKind.FunctionExpression) {
-            // TODO(rbuckton): Verifiy whether `setTextRange` is needed.
             return setTextRange(factory.createParenthesizedExpression(expression), expression);
         }
 
@@ -449,7 +442,6 @@ export function createParenthesizerRules(factory: NodeFactory): ParenthesizerRul
     function parenthesizeConciseBodyOfArrowFunction(body: ConciseBody): ConciseBody;
     function parenthesizeConciseBodyOfArrowFunction(body: ConciseBody): ConciseBody {
         if (!isBlock(body) && (isCommaSequence(body) || getLeftmostExpression(body, /*stopAtCallExpressions*/ false).kind === SyntaxKind.ObjectLiteralExpression)) {
-            // TODO(rbuckton): Verifiy whether `setTextRange` is needed.
             return setTextRange(factory.createParenthesizedExpression(body), body);
         }
 
