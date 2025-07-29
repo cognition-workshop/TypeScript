@@ -1,18 +1,18 @@
-name: "TypeScript Security Analysis"
+name: 'TypeScript Security Analysis'
 disable-default-queries: false
 queries:
   - uses: security-and-quality
   - uses: security-extended
 paths-ignore:
-  - "tests/**"
-  - "**/*.test.ts"
-  - "**/*.spec.ts"
-  - "built/**"
-  - "lib/**"
-  - "src/lib/**"
+  - 'tests/**'
+  - '**/*.test.ts'
+  - '**/*.spec.ts'
+  - 'built/**'
+  - 'lib/**'
+  - 'src/lib/**'
 paths:
-  - "src/compiler/**"
-  - "src/services/**"
+  - 'src/compiler/**'
+  - 'src/services/**'
 query-filters:
   - exclude:
       id: js/regex-injection

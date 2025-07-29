@@ -2,9 +2,9 @@ name: AI-Enhanced Security Analysis
 
 on:
   push:
-    branches: [ main, release-* ]
+    branches: [main, release-*]
   pull_request:
-    branches: [ main, release-* ]
+    branches: [main, release-*]
   schedule:
     - cron: '0 2 * * 1'
 
@@ -31,8 +31,8 @@ jobs:
 
       - name: Run AI Security Analysis
         run: |
-          node scripts/security-analysis.js > security-report.json
-          
+          node security-tools/security-analysis.js > security-report.json
+
       - name: Generate Security Metrics
         run: |
           echo "## Security Analysis Results" >> $GITHUB_STEP_SUMMARY
@@ -60,19 +60,19 @@ jobs:
             const fs = require('fs');
             const report = JSON.parse(fs.readFileSync('security-report.json', 'utf8'));
             const comment = `## 🔒 AI Security Analysis Results
-            
+
             **Files Scanned:** ${report.summary.total_files_scanned}
             **Security Issues Found:** ${report.summary.security_issues_found}
             **High-Risk Patterns:** ${report.summary.high_risk_patterns}
             **Medium-Risk Patterns:** ${report.summary.medium_risk_patterns}
             **Files with Issues:** ${report.summary.files_with_issues}
-            
+
             ${report.summary.high_risk_patterns > 0 ? '⚠️ **High-risk security patterns detected!**' : '✅ **No high-risk patterns found**'}
-            
+
             ### Top Issue Types:
             ${Object.entries(report.breakdown_by_type).slice(0, 5).map(([type, count]) => `- ${type}: ${count}`).join('\n')}
             `;
-            
+
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
