@@ -1,0 +1,81 @@
+name: AI-Enhanced Security Analysis
+
+on:
+  push:
+    branches: [ main, release-* ]
+  pull_request:
+    branches: [ main, release-* ]
+  schedule:
+    - cron: '0 2 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  pull-requests: write
+
+jobs:
+  ai-security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Setup Node.js
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run AI Security Analysis
+        run: |
+          node scripts/security-analysis.js > security-report.json
+          
+      - name: Generate Security Metrics
+        run: |
+          echo "## Security Analysis Results" >> $GITHUB_STEP_SUMMARY
+          echo "$(cat security-report.json | jq -r '.summary | to_entries[] | "- \(.key): \(.value)"')" >> $GITHUB_STEP_SUMMARY
+
+      - name: Upload Security Report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: security-analysis-report
+          path: security-report.json
+          retention-days: 30
+
+      - name: Check for High-Risk Issues
+        run: |
+          HIGH_RISK=$(cat security-report.json | jq '.summary.high_risk_patterns')
+          if [ "$HIGH_RISK" -gt 0 ]; then
+            echo "::warning::Found $HIGH_RISK high-risk security patterns"
+          fi
+
+      - name: Comment on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('security-report.json', 'utf8'));
+            const comment = `## 🔒 AI Security Analysis Results
+            
+            **Files Scanned:** ${report.summary.total_files_scanned}
+            **Security Issues Found:** ${report.summary.security_issues_found}
+            **High-Risk Patterns:** ${report.summary.high_risk_patterns}
+            **Medium-Risk Patterns:** ${report.summary.medium_risk_patterns}
+            **Files with Issues:** ${report.summary.files_with_issues}
+            
+            ${report.summary.high_risk_patterns > 0 ? '⚠️ **High-risk security patterns detected!**' : '✅ **No high-risk patterns found**'}
+            
+            ### Top Issue Types:
+            ${Object.entries(report.breakdown_by_type).slice(0, 5).map(([type, count]) => `- ${type}: ${count}`).join('\n')}
+            `;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

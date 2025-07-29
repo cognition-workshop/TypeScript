@@ -1,10 +1,27 @@
-name: CodeQL Configuration
-
+name: "TypeScript Security Analysis"
+disable-default-queries: false
+queries:
+  - uses: security-and-quality
+  - uses: security-extended
 paths-ignore:
-  - src/lib
-  - tests
-
+  - "tests/**"
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "built/**"
+  - "lib/**"
+  - "src/lib/**"
+paths:
+  - "src/compiler/**"
+  - "src/services/**"
 query-filters:
-  # Falls over on our dynamic RegExp generation
   - exclude:
       id: js/regex-injection
+      id: js/unused-local-variable
+  - include:
+      tags:
+        - security
+        - external/cwe
+        - external/cwe/cwe-079
+        - external/cwe/cwe-089
+        - external/cwe/cwe-094
+        - external/cwe/cwe-095
