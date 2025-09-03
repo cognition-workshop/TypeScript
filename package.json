@@ -106,7 +106,8 @@
         "knip": "hereby knip",
         "format": "dprint fmt",
         "setup-hooks": "node scripts/link-hooks.mjs",
-        "azure:deploy": "az webapp deployment source config-zip --resource-group typescript-rg --name typescript-compiler --src dist/azure-bundle.zip"
+        "azure:deploy": "node scripts/bundle-for-azure.mjs",
+        "azure:health": "node dist/scripts/health-check.js"
     },
     "browser": {
         "fs": false,
