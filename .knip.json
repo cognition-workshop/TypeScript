@@ -1,0 +1,8 @@
+{
+    "ignore": [
+        "src/testRunner/unittests/eslint/enterpriseRules.ts"
+    ],
+    "ignoreBinaries": [
+        "az"
+    ]
+}

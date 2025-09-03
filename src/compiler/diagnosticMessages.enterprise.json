@@ -1,0 +1,27 @@
+{
+    "Enterprise_error_handling_missing_try_catch": {
+        "category": "Error",
+        "code": 9001,
+        "message": "Async function should include proper error handling with try-catch blocks for enterprise reliability."
+    },
+    "Azure_compatibility_sync_file_operations": {
+        "category": "Warning",
+        "code": 9002,
+        "message": "Avoid synchronous file operations in Azure environments. Use async alternatives like 'readFile' instead of 'readFileSync'."
+    },
+    "Enterprise_configuration_hardcoded_values": {
+        "category": "Warning",
+        "code": 9003,
+        "message": "Use environment variables for configuration in enterprise deployments instead of hardcoded values."
+    },
+    "Azure_naming_convention_violation": {
+        "category": "Warning",
+        "code": 9004,
+        "message": "Follow Azure naming conventions for functions and resources."
+    },
+    "Enterprise_logging_missing_context": {
+        "category": "Warning",
+        "code": 9005,
+        "message": "Error logging should include contextual information for enterprise debugging."
+    }
+}

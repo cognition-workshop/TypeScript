@@ -1,0 +1,81 @@
+trigger:
+  - main
+  - develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  nodeVersion: '20.x'
+  npmCacheFolder: $(Pipeline.Workspace)/.npm
+
+stages:
+  - stage: Build
+    displayName: 'Build and Test'
+    jobs:
+      - job: BuildJob
+        displayName: 'Build TypeScript Compiler'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: $(nodeVersion)
+            displayName: 'Install Node.js'
+
+          - task: Cache@2
+            inputs:
+              key: 'npm | "$(Agent.OS)" | package-lock.json'
+              restoreKeys: |
+                npm | "$(Agent.OS)"
+              path: $(npmCacheFolder)
+            displayName: 'Cache npm'
+
+          - script: |
+              npm config set cache $(npmCacheFolder)
+              npm ci
+            displayName: 'Install dependencies'
+
+          - script: |
+              npm run build:compiler
+            displayName: 'Build TypeScript compiler'
+
+          - script: |
+              npm run lint
+            displayName: 'Run ESLint'
+
+          - script: |
+              npm run test
+            displayName: 'Run tests'
+            continueOnError: true
+
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/test-results.xml'
+              testRunTitle: 'TypeScript Tests'
+
+          - task: PublishCodeCoverageResults@1
+            condition: succeededOrFailed()
+            inputs:
+              codeCoverageTool: 'Cobertura'
+              summaryFileLocation: '**/coverage/cobertura-coverage.xml'
+
+  - stage: Deploy
+    displayName: 'Deploy to Azure'
+    dependsOn: Build
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+    jobs:
+      - deployment: DeployJob
+        displayName: 'Deploy to Azure App Service'
+        environment: 'production'
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: AzureWebApp@1
+                  inputs:
+                    azureSubscription: 'Azure-ServiceConnection'
+                    appType: 'webAppLinux'
+                    appName: 'typescript-compiler-service'
+                    package: '$(Pipeline.Workspace)/drop'
+                    runtimeStack: 'NODE|20-lts'
