@@ -966,6 +966,23 @@ export const configureExperimental = task({
     run: () => exec(process.execPath, ["scripts/configurePrerelease.mjs", "experimental", "package.json", "src/compiler/corePublic.ts"]),
 });
 
+export const enterpriseBuild = task({
+    name: "enterprise-build",
+    description: "Build TypeScript with enterprise-grade optimizations for Azure deployment",
+    dependencies: [local],
+    run: async () => {
+        console.log("Building enterprise TypeScript bundle...");
+        await exec(process.execPath, ["scripts/bundle-for-azure.mjs"]);
+        console.log("Enterprise build completed successfully");
+    },
+});
+
+export const azureCompatibilityTest = task({
+    name: "azure-compatibility-test", 
+    description: "Test Azure compatibility patterns in the codebase",
+    run: () => exec(process.execPath, ["scripts/test-azure-compatibility.mjs"]),
+});
+
 export const help = task({
     name: "help",
     description: "Prints the top-level tasks.",

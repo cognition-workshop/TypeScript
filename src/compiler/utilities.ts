@@ -2356,6 +2356,7 @@ export function createDiagnosticForNode(node: Node, message: DiagnosticMessage, 
     return createDiagnosticForNodeInSourceFile(sourceFile, node, message, ...args);
 }
 
+
 /** @internal */
 export function createDiagnosticForNodeArray(sourceFile: SourceFile, nodes: NodeArray<Node>, message: DiagnosticMessage, ...args: DiagnosticArguments): DiagnosticWithLocation {
     const start = skipTrivia(sourceFile.text, nodes.pos);

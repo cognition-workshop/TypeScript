@@ -157,6 +157,8 @@ export default tseslint.config(
             "local/jsdoc-format": "error",
             "local/js-extensions": "error",
             "local/no-array-mutating-method-expressions": "error",
+            "local/enterprise-error-handling": "error",
+            "local/azure-compatibility": "warn",
         },
     },
     {

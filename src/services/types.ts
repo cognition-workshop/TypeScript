@@ -447,6 +447,13 @@ export const enum SemanticClassificationFormat {
 }
 
 /** @internal */
+export interface AzureCompletionContext {
+    serviceType?: "functions" | "appservice" | "storage" | "cosmosdb";
+    sdkVersion?: string;
+    environmentType?: "development" | "staging" | "production";
+}
+
+/** @internal */
 export interface RegionDiagnosticsResult {
     diagnostics: Diagnostic[];
     spans: TextSpan[];
@@ -551,6 +558,12 @@ export interface LanguageService {
      * @param formattingSettings settings needed for calling formatting functions.
      */
     getCompletionsAtPosition(fileName: string, position: number, options: GetCompletionsAtPositionOptions | undefined, formattingSettings?: FormatCodeSettings): WithMetadata<CompletionInfo> | undefined;
+
+    /**
+     * Gets Azure-specific completion entries for enterprise development patterns.
+     * @internal
+     */
+    getAzureCompletionsAtPosition?(fileName: string, position: number, azureContext?: AzureCompletionContext): WithMetadata<CompletionInfo> | undefined;
 
     /**
      * Gets the extended details for a completion entry retrieved from `getCompletionsAtPosition`.
