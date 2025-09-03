@@ -27,9 +27,9 @@ function logResult(test, status, message) {
 function verifyTsConfigEnhancements() {
     console.log('\n📋 Verifying TypeScript Configuration Enhancements...');
     
-    const tsConfigPath = join(__dirname, '../src/tsconfig-base.json');
+    const tsConfigPath = join(__dirname, '../src/tsconfig.enterprise.json');
     if (!existsSync(tsConfigPath)) {
-        logResult('TypeScript Config', 'fail', 'tsconfig-base.json not found');
+        logResult('TypeScript Config', 'fail', 'tsconfig.enterprise.json not found');
         return;
     }
     
