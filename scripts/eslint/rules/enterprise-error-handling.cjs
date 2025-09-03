@@ -26,14 +26,14 @@ module.exports = createRule({
         const hasAwaitExpression = node => {
             let hasAwait = false;
             function visit(child) {
-                if (child.type === AST_NODE_TYPES.AwaitExpression) {
+                if (child && child.type === AST_NODE_TYPES.AwaitExpression) {
                     hasAwait = true;
                     return;
                 }
-                if (child.body && Array.isArray(child.body)) {
+                if (child && child.body && Array.isArray(child.body)) {
                     child.body.forEach(visit);
                 }
-                else if (child.body) {
+                else if (child && child.body) {
                     visit(child.body);
                 }
             }
@@ -44,14 +44,14 @@ module.exports = createRule({
         const hasTryCatch = node => {
             let hasTry = false;
             function visit(child) {
-                if (child.type === AST_NODE_TYPES.TryStatement) {
+                if (child && child.type === AST_NODE_TYPES.TryStatement) {
                     hasTry = true;
                     return;
                 }
-                if (child.body && Array.isArray(child.body)) {
+                if (child && child.body && Array.isArray(child.body)) {
                     child.body.forEach(visit);
                 }
-                else if (child.body) {
+                else if (child && child.body) {
                     visit(child.body);
                 }
             }
