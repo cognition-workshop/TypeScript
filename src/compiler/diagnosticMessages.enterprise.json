@@ -5,7 +5,7 @@
         "message": "Async function should include proper error handling with try-catch blocks for enterprise reliability."
     },
     "Azure_compatibility_sync_file_operations": {
-        "category": "Warning", 
+        "category": "Warning",
         "code": 9002,
         "message": "Avoid synchronous file operations in Azure environments. Use async alternatives like 'readFile' instead of 'readFileSync'."
     },

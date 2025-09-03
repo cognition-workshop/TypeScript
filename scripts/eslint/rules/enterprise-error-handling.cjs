@@ -19,8 +19,8 @@ module.exports = createRule({
     defaultOptions: [],
 
     create(context) {
-        const isAsyncFunction = node => 
-            node.async || 
+        const isAsyncFunction = node =>
+            node.async ||
             (node.type === AST_NODE_TYPES.ArrowFunctionExpression && node.async);
 
         const hasAwaitExpression = node => {
@@ -32,7 +32,8 @@ module.exports = createRule({
                 }
                 if (child.body && Array.isArray(child.body)) {
                     child.body.forEach(visit);
-                } else if (child.body) {
+                }
+                else if (child.body) {
                     visit(child.body);
                 }
             }
@@ -49,7 +50,8 @@ module.exports = createRule({
                 }
                 if (child.body && Array.isArray(child.body)) {
                     child.body.forEach(visit);
-                } else if (child.body) {
+                }
+                else if (child.body) {
                     visit(child.body);
                 }
             }
@@ -62,7 +64,7 @@ module.exports = createRule({
                 if (!hasTryCatch(node)) {
                     context.report({
                         messageId: "missingErrorHandling",
-                        node: node,
+                        node,
                     });
                 }
             }
@@ -73,9 +75,9 @@ module.exports = createRule({
             if (catchClause && catchClause.body) {
                 const hasLogging = catchClause.body.body.some(stmt => {
                     return stmt.type === AST_NODE_TYPES.ExpressionStatement &&
-                           stmt.expression.type === AST_NODE_TYPES.CallExpression &&
-                           stmt.expression.callee.type === AST_NODE_TYPES.MemberExpression &&
-                           (stmt.expression.callee.property.name === "log" ||
+                        stmt.expression.type === AST_NODE_TYPES.CallExpression &&
+                        stmt.expression.callee.type === AST_NODE_TYPES.MemberExpression &&
+                        (stmt.expression.callee.property.name === "log" ||
                             stmt.expression.callee.property.name === "error" ||
                             stmt.expression.callee.property.name === "warn");
                 });

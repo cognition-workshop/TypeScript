@@ -24,48 +24,51 @@ module.exports = createRule({
             "writeFileSync",
             "existsSync",
             "statSync",
-            "readdirSync"
+            "readdirSync",
         ];
 
         const checkSyncOperations = node => {
-            if (node.type === AST_NODE_TYPES.CallExpression &&
+            if (
+                node.type === AST_NODE_TYPES.CallExpression &&
                 node.callee.type === AST_NODE_TYPES.MemberExpression &&
                 node.callee.property.type === AST_NODE_TYPES.Identifier &&
-                azureIncompatibleSyncMethods.includes(node.callee.property.name)) {
-                
+                azureIncompatibleSyncMethods.includes(node.callee.property.name)
+            ) {
                 context.report({
                     messageId: "avoidSyncOperations",
-                    node: node,
+                    node,
                 });
             }
         };
 
         const checkHardcodedConfig = node => {
-            if (node.type === AST_NODE_TYPES.VariableDeclarator &&
+            if (
+                node.type === AST_NODE_TYPES.VariableDeclarator &&
                 node.init &&
                 node.init.type === AST_NODE_TYPES.Literal &&
                 typeof node.init.value === "string" &&
                 (node.init.value.includes("localhost") ||
-                 node.init.value.includes("127.0.0.1") ||
-                 node.init.value.includes("http://") && !node.init.value.includes("process.env"))) {
-                
+                    node.init.value.includes("127.0.0.1") ||
+                    node.init.value.includes("http://") && !node.init.value.includes("process.env"))
+            ) {
                 context.report({
                     messageId: "preferEnvironmentConfig",
-                    node: node,
+                    node,
                 });
             }
         };
 
         const checkAzureNaming = node => {
-            if (node.type === AST_NODE_TYPES.FunctionDeclaration &&
+            if (
+                node.type === AST_NODE_TYPES.FunctionDeclaration &&
                 node.id &&
-                node.id.name) {
-                
+                node.id.name
+            ) {
                 const functionName = node.id.name;
                 if (functionName.includes("azure") || functionName.includes("Azure")) {
                     const isValidAzureNaming = /^[a-z][a-zA-Z0-9]*$/.test(functionName) ||
-                                             /^Azure[A-Z][a-zA-Z0-9]*$/.test(functionName);
-                    
+                        /^Azure[A-Z][a-zA-Z0-9]*$/.test(functionName);
+
                     if (!isValidAzureNaming) {
                         context.report({
                             messageId: "azureNamingConvention",

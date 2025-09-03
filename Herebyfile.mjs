@@ -978,7 +978,7 @@ export const enterpriseBuild = task({
 });
 
 export const azureCompatibilityTest = task({
-    name: "azure-compatibility-test", 
+    name: "azure-compatibility-test",
     description: "Test Azure compatibility patterns in the codebase",
     run: () => exec(process.execPath, ["scripts/test-azure-compatibility.mjs"]),
 });

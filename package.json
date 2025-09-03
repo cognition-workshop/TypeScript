@@ -97,7 +97,7 @@
         "build:tests": "hereby tests",
         "build:tests:notypecheck": "hereby tests --no-typecheck",
         "build:azure": "npm run build:compiler && npm run bundle:azure",
-    "build:enterprise": "tsc --project src/tsconfig.enterprise.json --noEmit",
+        "build:enterprise": "tsc --project src/tsconfig.enterprise.json --noEmit",
         "bundle:azure": "node scripts/bundle-for-azure.mjs",
         "clean": "hereby clean",
         "gulp": "hereby",

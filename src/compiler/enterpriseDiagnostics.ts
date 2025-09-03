@@ -2,7 +2,6 @@ import {
     DiagnosticMessage,
     DiagnosticWithLocation,
     Node,
-    SourceFile,
 } from "./_namespaces/ts.js";
 
 import {
@@ -20,11 +19,11 @@ export function createEnterpriseDiagnostic(
     const sourceFile = getSourceFileOfNode(node);
     const filteredArgs = args.filter((arg): arg is string | number => arg !== undefined);
     const diagnostic = createDiagnosticForNodeInSourceFile(sourceFile, node, message, ...filteredArgs);
-    
+
     if (context) {
         diagnostic.messageText = `[${context}] ${diagnostic.messageText}`;
     }
-    
+
     return diagnostic;
 }
 
